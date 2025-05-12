@@ -2,7 +2,7 @@ from dagster import AssetExecutionContext, SourceAsset
 from dagster_dlt import DagsterDltResource, dlt_assets
 from dlt import pipeline
 
-from kautos_data_platform.defs.ingestion.dlt.sources.wa.history import wa_history_source
+from kautos_data_platform.defs.ingestion.dlt.sources.wa import wa_history_source
 
 @dlt_assets(
     dlt_source=wa_history_source("kautos"),
