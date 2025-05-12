@@ -23,11 +23,6 @@ def wa_source(source_name: str):
     auth_token = os.getenv(f"WORLDANVIL__{source_name.upper()}__AUTH_TOKEN")
     app_key = os.getenv(f"WORLDANVIL__{source_name.upper()}__APP_KEY")
 
-    print(f"DEBUG (stdout): Using source_name for env var lookup: {source_name.upper()}")
-    print(f"DEBUG (stdout): World ID retrieved: XXXXXX{world_id[-5:] if world_id and len(world_id) > 5 else world_id}X")
-    print(f"DEBUG (stdout): Auth Token retrieved: XXXXXX{auth_token[-5:] if auth_token and len(auth_token) > 5 else auth_token}X")
-    print(f"DEBUG (stdout): App Key retrieved: XXXXXX{app_key[-5:] if app_key and len(app_key) > 5 else app_key}X")
-
     # Validate that environment variables are set
     if not all([world_id, auth_token, app_key]):
         missing_vars = []
@@ -160,5 +155,4 @@ def wa_source(source_name: str):
         ]
     }
 
-    # logger.info(f"DLT LOGGER: wa_history_source configured for {source_name}. Ready to yield resources.")
     yield from rest_api_resources(config)
