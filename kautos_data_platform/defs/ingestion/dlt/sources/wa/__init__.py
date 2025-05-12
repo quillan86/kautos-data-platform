@@ -12,10 +12,10 @@ from .helpers import wrap_single_as_list
 
 
 @dlt.source
-def wa_history_source(source_name: str):
-    # logger.setLevel("DEBUG") # Re-commenting this for now to focus on response_actions
-    # logger.info("DLT LOGGER level set to DEBUG.")
-
+def wa_source(source_name: str):
+    """
+    World Anvil API source.
+    """
     # for consistency
     source_name = source_name.lower()
     # Get environment variables
@@ -79,13 +79,84 @@ def wa_history_source(source_name: str):
                         "granularity": 2
                     },
                     "paginator": "single_page",
-                    "data_selector": "",
                     "response_actions": [
                         wrap_single_as_list
                     ]
                 },
                 "include_from_parent": ["id"],
             },
+            {
+                "name": "category_index",
+                "endpoint": {
+                    "path": "world/categories",
+                    "method": "POST",
+                    "data_selector": "entities",                    
+                    "params": {
+                        "id": world_id
+                    },
+                    "paginator": {
+                        "type": "post_body_offset",
+                        "limit": 50,
+                        "offset_param": "offset",
+                        "limit_param": "limit"
+                    }
+                }       
+            },
+            {
+                "name": "category_detail",
+                "endpoint": {
+                    "path": "category",
+                    "method": "GET",
+                    "data_selector": "$",
+                    "params": {
+                        "id": "{resources.category_index.id}",
+                        "granularity": 1
+                    },
+                    "paginator": "single_page",
+                    "response_actions": [
+                        wrap_single_as_list
+                    ]
+                },
+                "include_from_parent": ["id"]
+            },
+            {
+                "name": "article_index",
+                "endpoint": {
+                    "path": "world/articles",
+                    "method": "POST",
+                    "data_selector": "entities",                    
+                    "params": {
+                        "id": world_id
+                    },
+                    "json": {
+                        # Only include articles for the category specified in the parent resource
+                        "category": "{resources.category_index.id}"
+                    },
+                    "paginator": {
+                        "type": "post_body_offset",
+                        "limit": 50,
+                        "offset_param": "offset",
+                        "limit_param": "limit"
+                    }
+                },
+                "include_from_parent": ["id"]
+            },
+            {
+                "name": "article_detail",
+                "endpoint": {
+                    "path": "article",
+                    "method": "GET",
+                    "data_selector": "$",
+                    "params": {
+                        "id": "{resources.article_index.id}",
+                        "granularity": 1
+                    },
+                    "paginator": "single_page",
+                    "response_actions": [
+                        wrap_single_as_list
+                    ]
+                }
+            }
         ]
     }
 
